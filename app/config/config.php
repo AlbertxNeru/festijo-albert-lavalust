@@ -79,7 +79,18 @@ $config['environment'] = getenv('APP_ENV') ?: 'development';
 | WARNING: You MUST set this value!
 |
 */
-$config['base_url'] 				= '';
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+          (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+        ? 'https'
+        : 'http';
+
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$script_dir = isset($_SERVER['SCRIPT_NAME'])
+    ? str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']))
+    : '';
+$script_dir = preg_replace('#/public$#', '', rtrim($script_dir, '/'));
+
+$config['base_url'] = $scheme . '://' . $host . $script_dir;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,7 +110,7 @@ $config['proxy_enabled']           = FALSE;
 | variable to blank.
 |
 */
-$config['index_page']               = 'index.php';
+$config['index_page']               = '';
 
 /*
 |--------------------------------------------------------------------------
